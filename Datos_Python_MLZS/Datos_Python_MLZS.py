@@ -7,6 +7,27 @@ Created on Sat Sep 30 20:06:42 2023
 
 import tkinter as tk
 from tkinter import messagebox
+import re
+
+def es_entero_valido(valor):
+    try:
+        int(valor)
+        return True
+    except ValueError:
+        return False
+
+def es_decimal_valido(valor):
+    try:
+        float(valor)
+        return True
+    except ValueError:
+        return False
+    
+def es_entero_valido_de_10_digitos(valor):
+    return valor.isdigit() and len(valor) == 10
+
+def es_texto_valido(valor):
+    return bool(re.match("^[a-zA-Z\s]+$", valor))
 
 def limpiar_campos():
     entry_nombres.delete(0, tk.END)
@@ -25,6 +46,7 @@ def guardar_datos():
     edad = entry_edad.get()
     estatura = entry_estatura.get()
     telefono = entry_telefono.get()
+
     
     genero = ""
     if var_genero.get() == 1:
@@ -32,13 +54,17 @@ def guardar_datos():
     elif var_genero.get() == 2:
         genero = "Mujer"
         
-    datos = f"Nombres: {nombres}\nApellidos: {apellidos}\nEdad: {edad} años\nEstatura: {estatura} cm\nTeléfono: {telefono}"
+    if (es_entero_valido(edad) and es_decimal_valido(estatura) and es_entero_valido_de_10_digitos(telefono) and 
+        es_texto_valido(nombres) and es_texto_valido(apellidos)):
+        datos = f"Nombres: {nombres}\nApellidos: {apellidos}\nEdad: {edad} aÃ±os\nEstatura: {estatura} cm\nTelÃ©fono: {telefono}"
+        with open("datos99.txt", "a") as archivo:
+            archivo.write(datos + "\n\n")
+        
+        messagebox.showinfo("InformaciÃ³n", "Datos Guardados con Ã©xito:\n\n" + datos)
+        limpiar_campos()
+    else:
+        messagebox.showerror("Error","Por favor ingrese datos validos en los campos.")
     
-    with open("datos99.txt", "a") as archivo:
-        archivo.write(datos + "\n\n")
-    
-    messagebox.showinfo("Información", "Datos Guardados con éxito:\n\n" + datos)
-    limpiar_campos()
 
 ventana = tk.Tk()
 ventana.title("Formulario")
@@ -65,12 +91,12 @@ label_estatura.pack()
 entry_estatura = tk.Entry(ventana)
 entry_estatura.pack()
 
-label_telefono = tk.Label(ventana, text="Teléfono")
+label_telefono = tk.Label(ventana, text="TelÃ©fono")
 label_telefono.pack()
 entry_telefono = tk.Entry(ventana)
 entry_telefono.pack()
 
-label_genero = tk.Label(ventana, text="Género")
+label_genero = tk.Label(ventana, text="GÃ©nero")
 label_genero.pack()
 
 rb_hombre = tk.Radiobutton(ventana, text="Hombre", variable=var_genero, value=1)
